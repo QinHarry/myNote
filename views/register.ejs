@@ -1,0 +1,61 @@
+<%- include header%>
+    <div class="text-center page-title">register for newer</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4 col-xs-offset-4">
+                <form method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="username" id="username" placeholder="new username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="password">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="passwordRepeat" id="passwordRepeat" placeholder="confirm password">
+                    </div>
+                    <button type="submit" id="btn_rs" class="btn btn-default center-block">register</button>
+                </form>
+            </div>
+            <div class="col-xs-4">
+                <% if(registerErr){%><div class="alert alert-warning"><%= registerErr %></div><% } %>
+            </div>
+        </div>
+    </div>
+<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#btn_rs").click(function(){
+            if($("#username").val()==""){
+                alert("用户名不能为空");
+                $("#username").focus();
+                return false;
+            }else if($("#password").val()==""){
+                alert("密码不能为空");
+                $("#password").focus();
+                return false;
+            }else if($("#passwordRepeat").val()==""){
+                alert("请再次密码");
+                $("#passwordRepeat").focus();
+                return false;
+            }
+            if($("#username").val().length<3 || $("#username").val()>20){
+                alert("用户名长度为3-20个字符");
+                $("#username").focus();
+                return false;
+            }
+            if($("#username").val().match(/\W/)){
+                alert("用户名只能是字母、数字、下划线的组合");
+                $("#username").focus();
+                return false;
+            }
+            if($("#password").val().length<6 || !$("#password").val().match(/\d/) || !$("#password").val().match(/[a-z]/) || !$("#password").val().match(/[A-Z]/)){
+                alert("密码长度不能少于6，必须同时包含数字、小写字母、大写字母");
+                $("#password").focus();
+                return false;
+            }
+        });
+    });
+</script>
+</body>
+</html>

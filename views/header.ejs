@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+    <div class="clearfix page-nav">
+    <% if(user){%>
+        <div class="pull-left nav-username">welcome,<%= user.username %>!</div>
+        <div class="pull-left "><a href="/post">Post</a></div>
+        <div class="pull-left nav-quit presentation"><a href="/quit">Quit</a></div>
+    <% } else { %>
+        <div class="pull-right nav-register presentation"><a href="/register">Sign Up</a></div>
+        <div class="pull-right nav-login presentation" ><a href="/login">Sign In</a></div>
+    <% } %>
+    </div>

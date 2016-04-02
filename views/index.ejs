@@ -1,0 +1,50 @@
+<%- include header%>
+<div class="container">
+        <div class="row">
+                <table class="table table-striped">
+                        <caption>My Notes</caption>
+                        <thead>
+                        <tr>
+                                <th>Title</th>
+                                <th>Tag</th>
+                                <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% notes.forEach(function(note) { %>
+                        <tr>
+                                <td>
+                                        <a href="/detail/<%= note._id %>"><%= note.title %></a>
+                                </td>
+                                <td><%= note.tag %></td>
+                                <td><%= note.createTime %></td>
+                        </tr>
+                        <% }); %>
+                        </tbody>
+                </table>
+        </div>
+        <nav>
+                <ul class="pagination">
+                        <% p_pre = p - 1; %>
+                        <% p_after = p+1; %>
+                        <li>
+                                <a href="/list/<%= p_pre>0?p_pre:1%>" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                </a>
+                        </li>
+                        <% while(p_pre>0 && p-p_pre<=3) {%>
+                        <li><a href="/list/<%= p_pre %>"><%= p_pre %></a></li>
+                        <% } %>
+                        <li><a href="/list/<%= p %>"><%= p %></a></li>
+                        <% while(p_after<=p_count && p_after-p<=3) { %>
+                        <li><a href="/list/<%= p_after %>"><%= p_after %></a></li>
+                        <% } %>
+                        <li>
+                                <a href="/list/<%= p_after<=p_count?p_after:p_count%>" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;<%= p_count %></span>
+                                </a>
+                        </li>
+                </ul>
+        </nav>
+</div>
+<%- include footer %>
