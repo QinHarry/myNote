@@ -4,6 +4,7 @@ var bodyParser = require("body-parser");
 var crypto = require("crypto");
 var session = require('express-session');
 var moment = require('moment');
+var markdown = require('markdown-js');
 
 var checkLogin = require('./lib/checkLogin.js');
 
@@ -39,29 +40,18 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 app.get('/',checkLogin.noLogin);
 app.get('/',function(req,res){
-    Note.count({author:req.session.user.username}).exec(function(err,total){
-        if(err){
-            console.log('err');
-            return res.redirect('/');
-        }
-        Note.find({author:req.session.user.username})
-            .limit(5).skip(0).exec(function(err,allNotes){
-                if(err){
-                    console.log('err');
-                    return res.redirect('/');
-                }
-                var p_count = Math.ceil(total/5);
-                console.log(p_count);
-                res.render('index',{
-                    user:req.session.user,
-                    title:'首页',
-                    notes:allNotes,
-                    p:1,
-                    p_count:p_count
-                });
-                console.log(p_count);
+    Note.find({author:req.session.user.username})
+        .exec(function(err,allNotes){
+            if(err){
+                console.log('err');
+                return res.redirect('/');
+            }
+            res.render('index',{
+                user:req.session.user,
+                title:'首页',
+                notes:allNotes,
             });
-    });
+        });
 });
 app.get('/',checkLogin.noLogin);
 app.get('/list/:p',function(req,res){
@@ -168,6 +158,8 @@ app.post('/login',function(req,res){
     var username = req.body.username,
         password = req.body.password;
 
+    console.log(username);
+
     User.findOne({username:username},function(err,user){
         if(err){
             console.log(err);
@@ -241,6 +233,7 @@ app.get('/detail/:_id',function(req,res){
                 return res.redirect('/');
             }
             if(art){
+                art.content = markdown.makeHtml(art.content);
                 res.render('detail',{
                     user:req.session.user,
                     title:'check the note',
