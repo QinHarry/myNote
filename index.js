@@ -5,11 +5,15 @@ var crypto = require("crypto");
 var session = require('express-session');
 var moment = require('moment');
 var markdown = require('markdown-js');
+var Waterline = require('waterline');
+var mysqlAdapter = require('sails-mysql');
 
 var checkLogin = require('./lib/checkLogin.js');
 
 var mongoose = require('mongoose');
 var models = require('./models/models');
+
+var waterline = require('./config/waterline');
 
 var User = models.User;
 var Note = models.Note;
@@ -18,8 +22,16 @@ mongoose.connect('mongodb://localhost:27017/notes');
 mongoose.connection.on('error',console.error.bind(console,'db connect fail'));
 
 
-
 var app = express();
+
+waterline.orm.initialize(waterline.config, function(err, w_models){
+    if(err) {
+        console.error('orm initialize failed.', err)
+        return;
+    }
+
+    app.set('models', w_models.collections);
+});
 
 //建立session模型
 app.use(session({
@@ -37,6 +49,7 @@ app.use(express.static(path.join(__dirname,'public')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+
 
 app.get('/',checkLogin.noLogin);
 app.get('/',function(req,res){
@@ -242,6 +255,46 @@ app.get('/detail/:_id',function(req,res){
                 });
             }
         });
+
+});
+
+app.get('/blog',checkLogin.noLogin);
+app.get('/blog',function(req,res){
+    req.models = app.get('models');
+    req.models.blog.find().exec(function(err,blogs){
+        if(err){
+            console.log(err);
+            return res.redirect('/');
+        }
+        if(blogs){
+            res.render('blog',{
+                user:req.session.user,
+                title:'博客',
+                blogs:blogs
+            });
+        }
+    });
+
+});
+
+app.get('/blog/detail/:_id',checkLogin.noLogin);
+app.get('/blog/detail/:_id',function(req,res){
+    req.models = app.get('models');
+    req.models.blog.findOne({_id:req.params._id}).exec(function(err,blog){
+        if(err){
+            console.log(err);
+            return res.redirect('/');
+        }
+        if(art){
+            blog.content = markdown.makeHtml(blog.content);
+            res.render('blog_detail',{
+                user:req.session.user,
+                title:'check the note',
+                blog:blog,
+                moment:moment
+            });
+        }
+    });
 
 });
 
